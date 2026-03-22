@@ -1,87 +1,296 @@
-# CleanArc Interview Project - Tel Aviv Municipality
+# AI Risk Analysis System
 
-A production-style **Clean Architecture** sample in .NET 9 for a municipal interview.
+### Clean Architecture with .NET Core + Python AI Agent
 
-## Chosen Domain
-**Citizen Service Requests Management**
+---
 
-This API handles city issues reported by residents (hazards, lighting, sanitation, noise, graffiti), applies business rules and SLA-friendly priority scoring, secures internal flows with JWT roles, and exposes municipal dashboard KPIs.
+## 🚀 Overview
 
-## Architecture
-- `CleanArc.Domain`: Business entities, value objects, invariants, domain rules.
-- `CleanArc.Application`: Use cases, contracts (DTOs/commands), repository abstractions.
-- `CleanArc.Infrastructure`: EF Core SQL Server, migrations, identity seeding, in-memory repository, scoring policy.
-- `CleanArc.WebApi`: HTTP layer (controllers + middleware + JWT auth).
-- `CleanArc.Tests`: Console smoke test.
-- `CleanArc.IntegrationTests`: API integration tests with Testcontainers SQL Server.
+This project demonstrates a **production-oriented AI-powered Risk Decision System** built using:
 
-## Core Features
-- Clean Architecture dependency direction.
-- Real municipal workflow: `Opened -> InProgress -> Resolved/Rejected`.
-- Priority scoring by category + vulnerable population + area pressure.
-- ASP.NET Core Identity + roles:
-  - `Dispatcher`: can read and start handling.
-  - `Manager`: can also resolve/reject and view dashboard.
-- JWT login endpoint.
-- EF Core migrations and automatic `Database.Migrate()` in production mode.
+* **.NET Core (Clean Architecture)** for orchestration and business logic
+* **Python AI Service** for statistical analysis and AI reasoning
+* **LangChain Agent** for dynamic decision orchestration
+* **Statistical tools (Pandas / NumPy)** for deterministic computations
 
-## API Endpoints
-Base path: `/api/service-requests`
+The system analyzes customer data and returns a **risk score + business decision** (Approve / Review / Reject).
 
-- `POST /` create request (anonymous)
-- `GET /{id}` get by id (`Dispatcher`/`Manager`)
-- `GET /open` open and in-progress queue (`Dispatcher`/`Manager`)
-- `PATCH /{id}/start` assign and start handling (`Dispatcher`/`Manager`)
-- `PATCH /{id}/resolve` resolve request (`Manager`)
-- `PATCH /{id}/reject` reject request (`Manager`)
-- `GET /dashboard` municipal KPI snapshot (`Manager`)
+---
 
-Auth endpoint:
-- `POST /api/auth/login`
+## 🎯 Key Features
 
-Seeded credentials:
-- `dispatcher / Dispatcher123!`
-- `manager / Manager123!`
+* ✅ Clean Architecture (Domain-driven design)
+* ✅ AI Agent orchestration (tool-based reasoning)
+* ✅ Deterministic statistical calculations
+* ✅ Business decision layer (not just AI output)
+* ✅ Guardrails to prevent invalid AI responses
+* ✅ Retry & resilience for external AI calls
+* ✅ Scalable microservice-ready design
 
-## Database
-Migrations folder:
-- `CleanArc.Infrastructure/Persistence/Migrations`
+---
 
-Generate / apply (optional manual):
-```bash
-dotnet ef migrations add <Name> --project CleanArc.Infrastructure --startup-project CleanArc.WebApi
-dotnet ef database update --project CleanArc.Infrastructure --startup-project CleanArc.WebApi
+## 🧠 Architecture
+
+```
+Client
+   │
+   ▼
+.NET Core API
+   │
+   ▼
+Application Layer (Use Cases)
+   │
+   ▼
+Domain Layer (Business Rules)
+   │
+   ▼
+Infrastructure Layer
+   │
+   ├── Python AI Service
+   ├── Caching (Redis-ready)
+   └── Messaging (Queue-ready)
+        │
+        ▼
+LangChain Agent
+        │
+        ▼
+Statistical Tools (Pandas / NumPy)
 ```
 
-## Run Locally
-```bash
-dotnet restore CleanArcInterview.sln
-dotnet build CleanArcInterview.sln -c Release
+---
 
-dotnet run --project CleanArc.WebApi
-# smoke scenario
- dotnet run --project CleanArc.Tests -c Release
-# integration tests
- dotnet test CleanArc.IntegrationTests -c Release
+## 🏗️ Project Structure
+
+### .NET Core
+
+```
+src/
+ ├── Domain/
+ │     ├── Entities/
+ │     ├── Enums/
+ │     └── Rules/
+ │
+ ├── Application/
+ │     ├── Interfaces/
+ │     ├── Services/
+ │     └── UseCases/
+ │
+ ├── Infrastructure/
+ │     ├── AiClient/
+ │     ├── Caching/
+ │     └── Messaging/
+ │
+ └── API/
+       ├── Controllers/
+       └── DTOs/
 ```
 
-## Run With Docker + SQL Server
-```bash
-docker compose up --build
+---
+
+### Python AI Service
+
+```
+python-service/
+ ├── api/
+ ├── agents/
+ ├── tools/
+ ├── services/
+ └── models/
 ```
 
-API URL: `http://localhost:8080`
+---
 
-## CI
-GitHub Actions workflow at `.github/workflows/ci.yml`:
-- restore
-- build
-- smoke test
-- integration tests (Testcontainers)
+## 🔍 How It Works
 
-## Why This Is Interview-Ready
-- Real municipal scenario, not generic CRUD only.
-- Explicit business invariants and protected workflows.
-- Identity + JWT + RBAC.
-- SQL Server migrations and containerized deployment.
-- CI pipeline with integration testing discipline.
+1. Client sends customer data
+2. .NET Core API validates input
+3. Application layer orchestrates the use case
+4. Infrastructure calls Python AI service
+5. AI Agent decides which statistical tools to execute
+6. Tools perform deterministic calculations
+7. Result returns with:
+
+   * Risk Score
+   * Decision
+   * Explanation
+
+---
+
+## 📊 Example Input
+
+```json
+{
+  "age": 45,
+  "claims": 3,
+  "amount": 12000
+}
+```
+
+---
+
+## 📈 Example Output
+
+```json
+{
+  "score": 0.68,
+  "decision": "Review",
+  "reason": "Moderate claim frequency with high claim amount"
+}
+```
+
+---
+
+## 🧠 AI Design Principles
+
+### 1. Separation of Concerns
+
+* AI handles **reasoning**
+* Python tools handle **calculations**
+* .NET handles **business logic**
+
+---
+
+### 2. Deterministic Business Rules
+
+AI does NOT make final decisions.
+
+```
+Score > 0.7   → Reject  
+0.4 – 0.7     → Review  
+< 0.4         → Approve  
+```
+
+---
+
+### 3. Guardrails
+
+* Input validation before AI
+* Output validation after AI
+* Prevents hallucinations and invalid responses
+
+---
+
+### 4. Tool-Based Architecture
+
+The AI Agent dynamically selects tools such as:
+
+* Risk scoring
+* Anomaly detection
+* Trend analysis
+
+---
+
+## ⚙️ Technologies
+
+### Backend
+
+* .NET Core Web API
+* Dependency Injection
+* Clean Architecture
+
+### AI Service
+
+* Python
+* LangChain
+* Pandas / NumPy
+
+### Infrastructure (Planned / Extendable)
+
+* Redis (caching)
+* RabbitMQ / Service Bus (async processing)
+
+---
+
+## 🚀 Running the Project
+
+### 1. Run Python AI Service
+
+```bash
+cd python-service
+pip install -r requirements.txt
+uvicorn main:app --reload
+```
+
+---
+
+### 2. Run .NET API
+
+```bash
+cd src/API
+dotnet run
+```
+
+---
+
+### 3. Test Endpoint
+
+```
+POST /api/risk
+```
+
+---
+
+## 📌 Design Decisions
+
+### Why separate AI service?
+
+* Independent scaling
+* Isolated failures
+* Better control over latency and cost
+
+---
+
+### Why not let AI decide everything?
+
+To ensure:
+
+* Deterministic outcomes
+* Regulatory compliance (important in insurance/finance)
+* Explainability
+
+---
+
+### Why LangChain?
+
+To enable:
+
+* Tool orchestration
+* Dynamic reasoning
+* Extensible AI workflows
+
+---
+
+## 🔮 Future Improvements
+
+* Add real ML models (not only statistical rules)
+* Introduce feedback loop for continuous learning
+* Implement full async pipeline with message queue
+* Add observability (metrics, tracing, dashboards)
+* Integrate real insurance datasets
+
+---
+
+## 🧠 What This Project Demonstrates
+
+* Full-stack system design with AI integration
+* Clean Architecture principles in real-world use
+* AI as an orchestrator, not a black box
+* Production-oriented thinking (scalability, reliability, control)
+
+---
+
+## 💬 Interview Talking Point
+
+> "The system separates AI reasoning from deterministic business rules to maintain control, reliability, and explainability — especially critical in risk-based domains like insurance."
+
+---
+
+## 👨‍💻 Author
+
+David Peretz
+
+---
+
+## 📄 License
+
+MIT
