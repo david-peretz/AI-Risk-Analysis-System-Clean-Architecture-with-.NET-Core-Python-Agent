@@ -294,3 +294,22 @@ David Peretz
 ## 📄 License
 
 MIT
+
+LangChain Agent for dynamic decision orchestration.
+
+איפה זה נמצא:
+
+risk_agent_service.py:11 RiskAgentService עם אתחול ה־LLM
+risk_agent_service.py:28 המתודה _dynamic_decision(...) שמריצה orchestration דרך LangChain
+risk_agent_service.py:34 ChatPromptTemplate לבניית החלטה דינמית
+risk_agent_service.py:109 _build_llm() שמפעיל ChatOpenAI כשיש OPENAI_API_KEY
+risk_agent_service.py:122 fallback דטרמיניסטי אם אין מפתח/יש כשל
+עדכון תלות:
+
+requirements.txt:7 הוספתי langchain-openai
+כדי שזה יעבוד בפועל דינמית, צריך להגדיר:
+
+OPENAI_API_KEY
+אופציונלי: OPENAI_MODEL (ברירת מחדל: gpt-4o-mini)
+
+
